@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Project_API.Models;
 
@@ -77,7 +79,6 @@ namespace Project_API.Controllers
 
 
 
-
         // POST: api/Registrations
         [HttpPost]
         public async Task<ActionResult<Registration>> PostRegistration(Registration registration)
@@ -96,7 +97,15 @@ namespace Project_API.Controllers
             if(registration.FName.Length > AppConstants.FirstName)
             {
                 return BadRequest("First name should be 10 characters long.");
-            }           
+            }
+
+            // Validate middle name
+            
+
+            if (registration.MName.Length > AppConstants.MiddleName)
+            {
+                return BadRequest("Middle name should be 10 characters long.");
+            }
 
             // Validate last name
             if (string.IsNullOrEmpty(registration.LName))
@@ -130,8 +139,19 @@ namespace Project_API.Controllers
 
             }
 
+            // Validate Password
+            if (string.IsNullOrEmpty(registration.Password))
+            {
+                return BadRequest("Password must not be empty since its a required field.");
+            }
+
+            if (registration.Password.Length < AppConstants.PasswordMin || registration.Password.Length > AppConstants.PasswordMax)
+            {
+                return BadRequest("Password  should be more than 8 digits and less than 20 digits long.");
+            }
+
             //validate country
-            if(string.IsNullOrEmpty(registration.Country))
+            if (string.IsNullOrEmpty(registration.Country))
             {
                 return BadRequest("Country must not be empty since its a required field.");
 
